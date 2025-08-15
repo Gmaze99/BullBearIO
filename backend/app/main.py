@@ -1,13 +1,13 @@
 # Import FastAPI framework
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
 # CORS middleware allows cross-origin requests (frontend → backend)
 from fastapi.middleware.cors import CORSMiddleware
+
 from app.services.sentiment import get_sentiment
 from app.services.stocks import get_stock_data
-from fastapi import APIRouter
+from app.services.analysis import get_combined_analysis
 
 
-router = APIRouter()
 # Create the FastAPI app instance with metadata
 app = FastAPI(
     title="BullBearIO API",   # Shown in Swagger UI
@@ -53,3 +53,11 @@ async def sentiment_endpoint(symbol: str):
     """
     sentiment_score = get_sentiment(symbol.upper())
     return {"symbol": symbol.upper(), "sentiment": sentiment_score}
+
+@app.get("/analysis/{symbol}")
+async def analysis_endpoint(symbol: str):
+    try:
+        result = get_combined_analysis(symbol)
+        return result
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))

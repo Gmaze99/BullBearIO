@@ -2,12 +2,14 @@ import finnhub
 import os
 from datetime import datetime, timedelta
 from textblob import TextBlob
+from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
 
 # Load your API key (can also use dotenv)
 FINNHUB_API_KEY = os.getenv("FINNHUB_API_KEY", "YOUR_FINNHUB_API_KEY")
 
 # Setup Finnhub client
 finnhub_client = finnhub.Client(api_key=FINNHUB_API_KEY)
+analyzer = SentimentIntensityAnalyzer()
 
 def get_sentiment(symbol: str):
     try:
@@ -26,7 +28,7 @@ def get_sentiment(symbol: str):
         for article in news:
             headline = article.get("headline", "")
             if headline:
-                sentiment = TextBlob(headline).sentiment.polarity
+                sentiment = analyzer.polarity_scores(headline)["compound"]
                 sentiment_scores.append(sentiment)
 
         if not sentiment_scores:

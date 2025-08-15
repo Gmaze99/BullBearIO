@@ -4,3 +4,5 @@ yfinance
 textblob
 requests
 finnhub-python
+python-dotenv
+vaderSentiment
