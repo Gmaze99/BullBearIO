@@ -3,8 +3,11 @@ from fastapi import FastAPI
 # CORS middleware allows cross-origin requests (frontend → backend)
 from fastapi.middleware.cors import CORSMiddleware
 from app.services.sentiment import get_sentiment
-from app.services.stocks import get_stock_data  
+from app.services.stocks import get_stock_data
+from fastapi import APIRouter
 
+
+router = APIRouter()
 # Create the FastAPI app instance with metadata
 app = FastAPI(
     title="BullBearIO API",   # Shown in Swagger UI
@@ -22,13 +25,16 @@ app.add_middleware(
 
 # Basic health check endpoint
 # This is used to verify that the backend is up and running
-@app.get("/api/health")
-def health():
+@app.get("/")
+def root():
     """
-    Returns the API status.
-    Can be used by frontend or monitoring systems to check if the backend is alive.
+    Root endpoint — provides basic API info.
     """
-    return {"status": "ok"}  # JSON response
+    return {
+        "message": "Welcome to BullBearIO API 🚀",
+        "docs_url": "/docs",
+        "endpoints": ["/api/health", "/stock/{symbol}", "/sentiment/{symbol}"]
+    }
 
 @app.get("/stock/{symbol}")
 async def stock_endpoint(symbol: str):
@@ -45,5 +51,5 @@ async def sentiment_endpoint(symbol: str):
     Endpoint to fetch sentiment analysis of latest news headlines for the stock.
     Example: GET /sentiment/GOOGL
     """
-    sentiment_score = get_sentiment(symbol)
-    return {"symbol": symbol, "sentiment": sentiment_score}
+    sentiment_score = get_sentiment(symbol.upper())
+    return {"symbol": symbol.upper(), "sentiment": sentiment_score}
