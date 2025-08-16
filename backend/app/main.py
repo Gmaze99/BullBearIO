@@ -7,7 +7,6 @@ from app.services.sentiment import get_sentiment
 from app.services.stocks import get_stock_data
 from app.services.analysis import get_combined_analysis
 
-
 # Create the FastAPI app instance with metadata
 app = FastAPI(
     title="BullBearIO API",   # Shown in Swagger UI
@@ -61,3 +60,5 @@ async def analysis_endpoint(symbol: str):
         return result
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+    
+    
