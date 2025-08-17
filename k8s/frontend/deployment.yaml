@@ -1,0 +1,32 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: frontend-Deployment
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: frontend
+  template:
+    metadata:
+      labels:
+        app: frontend
+    spec:
+      containers:
+      - name: frontend
+        image: 391974145213.dkr.ecr.ap-south-1.amazonaws.com/bullbeario/bullbeario-backend:latest
+        ports:
+        - containerPort: 80
+        env:
+        - name: VITE_API_URL
+          value: "http://backend-service:8000"
+        resources:
+          requests:
+            memory: "100m"
+            cpu: "128mi"
+          limits:
+            memory: "200m"
+            cpu: "256Mi" 
+      imagePullSecrets:
+      - name: ecr-registry-secret
+

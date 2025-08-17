@@ -1,0 +1,17 @@
+apiVersion: argoproj
+kind: Application
+metadata:
+  name: bullbeario-backend
+spec:
+  project: default
+  source:
+    repoURL: 'https://github.com/Gmaze99/BullBearIO.git'
+    path: k8s/backend
+    targetRevision: HEAD
+  destination:
+    server: 'https://kubernetes.default.svc'
+    namespace: backend
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true

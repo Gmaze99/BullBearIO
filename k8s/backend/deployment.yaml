@@ -1,0 +1,35 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: backend-deployment
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: backend
+  template:
+    metadata:
+      labels:
+        app: backend
+    spec:
+      containers:
+      - name: backend
+        image: 391974145213.dkr.ecr.ap-south-1.amazonaws.com/bullbeario/bullbeario-backend:latest
+        ports:
+        - containerPort: 8000
+        envFrom:
+        - configMapRef:
+            name: backend-config
+        resources:
+          requests:
+            memory: "100m"
+            cpu: "128m"
+          limits:
+            memory: "200m"
+            cpu: "256m"
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 8000
+      imagePullSecrets:
+      - name: ecr-registry-secret

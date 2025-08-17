@@ -1,0 +1,19 @@
+apiVersion: argoproj.io/v1alpha1
+kindd: Application
+metadata:
+  name: bullbeario-frontend
+spec:
+  project: default
+  source:
+    repoURL: 'https://github.com/Gmaze99/BullBearIO.git'
+    path: k8s/frontend
+    targetRevision: HEAD
+  destination:
+    server: 'https://kubernetes.default.svc'
+    namespace: frontend
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+    - CreateNamespace=true
