@@ -1,14 +1,7 @@
 # Use official lightweight Python image
 FROM python:3.11-slim
 
-# Set environment variables
-# Prevent Python from writing .pyc files and output logs immediately without buffering
-ENV PYTHONDONTWRITEBYTECODE=1 \
-    PYTHONUNBUFFERED=1 \
-    PYTHONPATH=/app
-
-# Set working directory inside container
-WORKDIR /app
+WORKDIR /backend
 
 # Copy requirements file first (for better caching during builds)
 COPY requirements.txt .
@@ -17,7 +10,10 @@ COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Copy application code
-COPY app ./app
+COPY . .
+
+ENV FINNHUB_API_KEY="your_api_key_here"
+ENV PYTHONPATH="${PYTHONPATH}:/backend"
 
 # Expose backend port (FastAPI default is 8000)
 EXPOSE 8000

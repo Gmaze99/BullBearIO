@@ -2,7 +2,7 @@
 from fastapi import FastAPI, HTTPException
 # CORS middleware allows cross-origin requests (frontend → backend)
 from fastapi.middleware.cors import CORSMiddleware
-
+import os
 from app.services.sentiment import get_sentiment
 from app.services.stocks import get_stock_data
 from app.services.analysis import get_combined_analysis
@@ -13,13 +13,28 @@ app = FastAPI(
     version="0.1.0"           # API version
 )
 
-# Add CORS middleware to allow frontend to talk to the backend
+# Load allowed origins from environment variable
+# Format: "http://localhost:3000,https://example.com"
+# Defaults to empty list if not set (blocking all cross-origin requests)
+origins = os.getenv("ALLOWED_ORIGINS", "").split(",")  # Returns list of origins or empty list
+
+# Configure CORS middleware with security best practices
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],          # Allow all origins for now (change later for security)
-    allow_credentials=True,       # Allow cookies/authorization headers
-    allow_methods=["*"],           # Allow all HTTP methods (GET, POST, etc.)
-    allow_headers=["*"],           # Allow all headers
+    # List of allowed origins - NEVER use ["*"] in production
+    allow_origins=origins,
+    
+    # Allow credentials/cookies (only enable if your frontend needs authentication)
+    allow_credentials=True,  # Set to False if not using cookies/auth
+    
+    # Restrict to only necessary HTTP methods
+    allow_methods=["GET"],   # Add "POST", "PUT" etc. only if needed
+    
+    # Only allow specific headers (Content-Type is commonly needed for JSON APIs)
+    allow_headers=["Content-Type"],  # Add others like "Authorization" if needed
+    
+    # Security Note: For APIs that don't need CORS (same-origin only), 
+    # consider completely disabling this middleware instead
 )
 
 # Basic health check endpoint
