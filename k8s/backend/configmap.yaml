@@ -3,5 +3,5 @@ kind: ConfigMap
 metadata:
   name: backend-config
 data:
-  FINNHUB_API_KEY: "d2fkn9hr01qkv5ndikogd2fkn9hr01qkv5ndikp0"
+  FINNHUB_API_KEY: ""
   CORS_ORIGIN: "http://frontend-service"
