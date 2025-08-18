@@ -1,4 +1,4 @@
-<img width="100" height="100" alt="image" src="https://github.com/user-attachments/assets/b0304973-af87-442c-864e-4a122b429fff" /> **A stock analysis platform that tracks stock performance, analyzes news sentiment, and predicts possible short-term movements.**
+**A stock analysis platform that tracks stock performance, analyzes news sentiment, and predicts possible short-term movements.**
 
 
 ---
