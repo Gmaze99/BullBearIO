@@ -16,7 +16,7 @@ pipeline {
                         if (fileExists('BullBearIO')) {
                             dir('BullBearIO') {
                                 sh '''
-                                    git checkout main || git checkout -b master origin/main
+                                    git checkout main || git checkout -b main origin/main
                                     git pull origin main
                                 '''
                             }
@@ -59,6 +59,64 @@ pipeline {
                     docker tag bullbeario-backend:${IMAGE_TAG} ${ECR_REPO}/bullbeario-backend:${IMAGE_TAG}
                     docker push ${ECR_REPO}/bullbeario-backend:${IMAGE_TAG}
                 '''
+            }
+        }
+
+        stage('Clone ArgoCD Repo') {
+            steps {
+                withCredentials([string(credentialsId: 'GITHUB_TOKEN', variable: 'github')]) {
+                    script {
+                        if (fileExists('k8s')){
+                            dir('k8s') {
+                                sh '''
+                                    git checkout main || git checkout -b main origin/main
+                                    git pull origin main
+                                '''
+                                }
+                            }   
+                        else {
+                            sh 'git clone https://$github@github.com/Gmaze99/k8s.git'
+                        }
+                    }
+                }
+            }
+        }
+
+
+        stage('Update ArgoCD YAML') {
+            steps {
+                dir('k8s/backend') {
+                    sh '''ß
+                        sed -i 's|image:.*|image: '"${FULL_IMAGE}"'|' backend-app.yml
+                    '''
+                }
+
+                dir('k8s/frontend') {
+                    sh '''ß
+                        sed -i 's|image:.*|image: '"${FULL_IMAGE}"'|' frontend-app.yml
+                    '''
+                }
+            }
+        }
+
+        stage('Commit and Push Changes to Kubernetes with ArgoCD Repo') {
+            steps {
+                withCredentials([string(credentialsId: 'GITHUB_TOKEN', variable: 'github')]) {
+                    dir('k8s') {
+                        sh '''
+                            git config --global user.email "jenkins@ci.com"
+                            git config --global user.name "Jenkins CI"
+
+                            git add "backend/backend-app.yml"
+                            git commit -m "Updated image to ${FULL_IMAGE}" || echo "No changes to commit"
+                            git push https://$github@github.com/Gmaze99/k8s.git HEAD:main
+
+                            git add "frontend/frontend-app.yml"
+                            git commit -m "Updated image to ${FULL_IMAGE}" || echo "No changes to commit"
+                            git push https://$github@github.com/Gmaze99/k8s.git HEAD:main
+                        '''
+                    }
+                }
             }
         }
     }
